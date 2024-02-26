@@ -2,6 +2,8 @@
 
 ACAV (Autonomous Construction Aid Vehicle) is a mini-project aimed at developing an AI-powered cyber truck-like robot capable of assisting with carrying heavy loads for workers on construction sites. The project utilizes computer vision and artificial intelligence to enable the robot to autonomously follow and assist workers.
 
+<img src="images/construction-vehicle.jpg" alt="ACAV Robot" width="500">
+ 
 ## How It Works
 
 The ACAV system operates as follows:
