@@ -4,6 +4,8 @@ from adafruit_pca9685 import PCA9685
 
 def set_servo_angle(servo_number, angle):
     if servo_number < 16:
+        if servo_number == 3:
+           angle = 180 - angle 
         if angle > 180:
             angle = angle % 180
         i2c = board.I2C()
