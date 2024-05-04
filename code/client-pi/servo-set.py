@@ -4,6 +4,8 @@ from adafruit_pca9685 import PCA9685
 
 def set_servo_angle(servo_number, angle):
     if servo_number < 16:
+        if servo_number == 3:
+           angle = 180 - angle 
         if angle > 180:
             angle = angle % 180
         i2c = board.I2C()
@@ -12,6 +14,18 @@ def set_servo_angle(servo_number, angle):
         my_servo = servo_module.Servo(pca.channels[servo_number])
         my_servo.angle = angle
         pca.deinit()
+    else:
+        print("Error: Servo number must be under 16")
+
+def set_wheels(servo_number, percent):
+    if servo_number < 16:
+        i2c = board.I2C()
+        pca = PCA9685(i2c)
+        pca.frequency = 50
+        if percent < 0 or percent > 100:
+            raise ValueError("Percentage must be between 0 and 100")
+        pwm_value = int((percent / 100) * 65534)
+        pca.channels[servo_number].duty_cycle = hex(pwm_value)
     else:
         print("Error: Servo number must be under 16")
 
