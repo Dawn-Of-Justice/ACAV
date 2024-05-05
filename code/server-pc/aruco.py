@@ -14,10 +14,25 @@ class ArUcoDetector:
                 x, y, w, h = cv2.boundingRect(corner)
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
                 cv2.putText(frame, f"ArUco Marker {id[0]}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            return frame, [id[0] for id in ids]
+            return frame, [(id[0], corner) for id, corner in zip(ids, corners)]
         return None, None
 
 if __name__ == "__main__":
+    detector = ArUcoDetector()
+    camera = cv2.VideoCapture(0)
+    while True:
+        ret, frame = camera.read()
+        result, ids_with_corners = detector.detect_markers(frame)
+        if result is not None:
+            cv2.imshow('Frame', result)
+            if ids_with_corners:
+                for id, corner in ids_with_corners:
+                    cv2.putText(result, f"ArUco Marker {id}", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        else:
+            cv2.imshow('Frame', frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cv2.destroyAllWindows()
     detector = ArUcoDetector()
     camera = cv2.VideoCapture(0)
     while True:
