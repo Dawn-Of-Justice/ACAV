@@ -2,7 +2,6 @@ import cv2
 import socket
 import numpy as np
 
-
 def is_bbox_inside(bbox1, bbox2):
     """
     Check if bbox1 is completely inside bbox2.
@@ -21,8 +20,6 @@ def is_bbox_inside(bbox1, bbox2):
     y2_inside = bbox2[1] <= y2 <= bbox2[3]
 
     return x1_inside and y1_inside and x2_inside and y2_inside
-
-
 
 class VideoReceiver:
     def __init__(self):
