@@ -4,7 +4,6 @@ import numpy as np
 import os
 import warnings
 from server import VideoReceiver
-from obj_det import objDet
 from datacollector import Preprocessor
 
 np.set_printoptions(suppress=True)
