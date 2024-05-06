@@ -5,7 +5,7 @@ import os
 import warnings
 from server import VideoReceiver
 from obj_det import objDet
-from Person_and_Hand import Preprocessor
+from datacollector import Preprocessor
 
 np.set_printoptions(suppress=True)
 
