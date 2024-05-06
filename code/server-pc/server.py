@@ -52,7 +52,6 @@ class VideoReceiver:
         return frame
 
     def display_frame(self, frame, Title='Received'):
-
         cv2.imshow(Title, frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             self.conn.close()
