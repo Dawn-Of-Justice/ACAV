@@ -3,6 +3,9 @@ import cv2
 import numpy as np
 import os
 import warnings
+from server import VideoReceiver
+from obj_det import objDet
+from Person_and_Hand import Preprocessor
 
 np.set_printoptions(suppress=True)
 
@@ -27,16 +30,35 @@ class ProtectionSystem:
         return class_name, confidence_score
 
 if __name__ == "__main__":
-    protection_system = ProtectionSystem("keras_Model.h5", "labels.txt")
-    camera = cv2.VideoCapture(0)
+
+    receiver = VideoReceiver()
+    receiver.accept_connection()
+
+    processor = Preprocessor()
+    protection_system = ProtectionSystem("code/server-pc/keras_Model.h5", "code/server-pc/labels.txt")
+
     while True:
-        ret, image = camera.read()
-        cv2.imshow("Gesture Detection", image)
-        class_name, confidence_score = protection_system.predict(image)
-        print("Class:", class_name[2:], end="")
-        print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
-        keyboard_input = cv2.waitKey(1) & 0xFF
-        if keyboard_input == 27:
+        frame = receiver.receive_frame()
+        if frame is None:
+            continue
+        if not receiver.display_frame(frame):
             break
-    camera.release()
+        try:
+            image = cv2.resize(frame,(640, 430))
+            masked_image = processor.process(image)
+
+            if masked_image is not None:
+                cv2.imshow('Skelton', masked_image)
+
+            class_name, confidence_score = protection_system.predict(masked_image)
+            print("Class:", class_name[2:], end="")
+            print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
+            keyboard_input = cv2.waitKey(1) & 0xFF
+            if keyboard_input == 27:
+                break
+
+        except Exception as e:
+            pass
+
     cv2.destroyAllWindows()
+    receiver.close_connection()

@@ -55,6 +55,11 @@ if __name__ == "__main__":
     processor = Preprocessor()
     receiver = VideoReceiver()
     receiver.accept_connection()
+
+    blank_num = 0
+    go_num = 0
+    stop_num = 0
+
     while True:
         frame = receiver.receive_frame()
         if frame is None:
@@ -62,12 +67,31 @@ if __name__ == "__main__":
 
         image = cv2.resize(frame,(640, 430))
         masked_image = processor.process(image)
-        print(masked_image)
 
         if masked_image is not None:
             cv2.imshow('Skelton', masked_image)
-            
-        if cv2.waitKey(1) == ord("q"):
+
+        key = cv2.waitKey(1) 
+
+        if key == ord("b"):
+            print('hi')
+            if masked_image is not None :
+                cv2.imwrite(r'C:\Users\salos\OneDrive\Documents\GitHub\ACAV\code\Data\Blank\image_{}.jpg'.format(blank_num), masked_image)
+                blank_num += 1
+
+        if key == ord("s"):
+            print('stop')
+            if masked_image is not None :
+                cv2.imwrite(r'C:\Users\salos\OneDrive\Documents\GitHub\ACAV\code\Data\Stop\image_{}.jpg'.format(stop_num), masked_image)
+                stop_num += 1
+
+        if key == ord("g"):
+            print('go')
+            if masked_image is not None:
+                cv2.imwrite(r'C:\Users\salos\OneDrive\Documents\GitHub\ACAV\code\Data\Go\image_{}.jpg'.format(go_num), masked_image)
+                go_num += 1
+
+        if key == ord("q"):
             break
 
         if not receiver.display_frame(frame):
