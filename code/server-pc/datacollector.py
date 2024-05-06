@@ -1,9 +1,6 @@
 import mediapipe as mp
 import cv2
 import numpy as np
-import os
-import json
-from tqdm import tqdm
 from server import VideoReceiver
 from PIL import Image
 from obj_det import objDet

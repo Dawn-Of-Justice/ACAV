@@ -1,8 +1,6 @@
 import cv2
 import cvlib as cv
 from cvlib.object_detection import draw_bbox
-import pandas as pd
-
 
 class objDet:
     def __init__(self, model="yolov4", confidence=0.5):
