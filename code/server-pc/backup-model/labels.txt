@@ -1,0 +1,3 @@
+0 Blank
+1 Go
+2 Stop

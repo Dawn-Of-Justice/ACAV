@@ -53,9 +53,9 @@ if __name__ == "__main__":
     receiver = VideoReceiver()
     receiver.accept_connection()
 
-    blank_num = 0
-    go_num = 0
-    stop_num = 0
+    blank_num = 59
+    go_num = 42
+    stop_num = 38
 
     while True:
         frame = receiver.receive_frame()

@@ -22,10 +22,8 @@ while True:
         break
     result, ids_with_corners = detector.detect_markers(frame)
     if result is not None:
-        cv2.imshow('Frame', result)
+        # cv2.imshow('Frame', result)
         if ids_with_corners:
-            # cv2.circle(result,(int(ids_with_corners[0][1][0][0][0]),int(ids_with_corners[0][1][0][0][1])),3,(0,255,255))
-            # cv2.circle(result,(int(ids_with_corners[0][1][0][2][0]),int(ids_with_corners[0][1][0][2][1])),3,(0,255,255))
             bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
             aruco_id = ids_with_corners[0][1][0][0][0],ids_with_corners[0][1][0][0][1],ids_with_corners[0][1][0][2][0],ids_with_corners[0][1][0][2][1]
             if 'person' in classes:
