@@ -42,7 +42,13 @@ class Preprocessor():
             cropped_image = pil_image.crop(bbox)
             # cv2.imshow("cropped",image[bbox[0]:bbox[1], bbox[2]:bbox[3]])
             # cv2.imshow("cropped",np.array(cropped_image))
+<<<<<<< Updated upstream
             cropped_image_blank = self.detect_hands(np.array(cropped_image))
+=======
+            cropped_image = np.array(cropped_image)
+            cropped_image_blank = self.detect_hands(cropped_image)
+            
+>>>>>>> Stashed changes
         return cropped_image_blank
 
 if __name__ == "__main__":
