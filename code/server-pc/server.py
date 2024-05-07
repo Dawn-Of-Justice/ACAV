@@ -1,6 +1,7 @@
 import cv2
 import socket
 import numpy as np
+import threading
 
 class VideoReceiver:
     def __init__(self):
@@ -33,7 +34,6 @@ class VideoReceiver:
         return frame
 
     def display_frame(self, frame, Title='Received'):
-
         cv2.imshow(Title, frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             self.conn.close()
@@ -45,9 +45,24 @@ class VideoReceiver:
         self.conn.close()
         cv2.destroyAllWindows()
 
+    def send_command(self, command):
+        command_bytes = command.encode('utf-8')
+        command_length = len(command_bytes).to_bytes(4, byteorder='big')
+        self.conn.sendall(command_length + command_bytes)
+
 def main():
     receiver = VideoReceiver()
     receiver.accept_connection()
+
+    def get_command():
+        while True:
+            command = input("Enter command: ")
+            receiver.send_command(command)
+
+    command_thread = threading.Thread(target=get_command)
+    command_thread.daemon = True
+    command_thread.start()
+
     while True:
         frame = receiver.receive_frame()
         if frame is None:

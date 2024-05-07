@@ -5,6 +5,7 @@ from gesture import ProtectionSystem
 from obj_det import objDet
 import cv2
 import numpy as np
+import threading
 
 receiver = VideoReceiver()
 receiver.accept_connection()
@@ -12,6 +13,13 @@ detector = ArUcoDetector()
 processor = Preprocessor()
 protection_system = ProtectionSystem("code/server-pc/keras_Model.h5", "code/server-pc/labels.txt")
 ObjectDetect = objDet()
+
+def get_command(command):
+    receiver.send_command(command)
+
+# command_thread = threading.Thread(target=get_command)
+# command_thread.daemon = True
+# command_thread.start()
 
 while True:
 
