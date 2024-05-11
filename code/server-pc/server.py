@@ -47,8 +47,8 @@ class VideoReceiver:
 
     def send_command(self, command):
         command_bytes = command.encode('utf-8')
-        command_length = len(command_bytes).to_bytes(4, byteorder='big')
-        self.conn.sendall(command_length + command_bytes)
+        # command_length = len(command_bytes).to_bytes(4, byteorder='big')
+        self.conn.sendall(command_bytes)
 
 def main():
     receiver = VideoReceiver()

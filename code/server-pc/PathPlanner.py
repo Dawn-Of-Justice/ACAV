@@ -19,10 +19,10 @@ class PathPlanning:
         self.track = (current_x, current_y)
 
         if self.centre_of_tracking[0] < self.track[0]:
-            return 'right'
+            return 'r'
         
         if self.centre_of_tracking[0] > self.track[0]:
-            return 'left'
+            return 'l'
 
         if self.reset == True:
             self.l_or_r = None
