@@ -5,9 +5,7 @@ from gesture import ProtectionSystem
 from obj_det import objDet
 import cv2
 import numpy as np
-import threading
 from PathPlanner import PathPlanning
-
 
 receiver = VideoReceiver()
 receiver.accept_connection()
@@ -19,15 +17,11 @@ ObjectDetect = objDet()
 pathplanner = PathPlanning((0,0))
 
 lock = 0
-
 switch =  0
 prev_switch = 0
+
 def get_command(command):
     receiver.send_command(command)
-
-# command_thread = threading.Thread(target=get_command)
-# command_thread.daemon = True
-# command_thread.start()
 
 while True:
 
@@ -36,22 +30,20 @@ while True:
         continue
     if not receiver.display_frame(frame):
         break
-    result, ids_with_corners = detector.detect_markers(frame)
-    switch = 0
-    if result is not None:
-        # cv2.imshow('Frame', result)
         
-        switch = 1
-        if lock == 1:
-            get_command('f')   
+    switch = 1
+    if lock == 1:
+        get_command('f')   
 
-        if ids_with_corners:
+    bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
 
-            bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
-            aruco_id = ids_with_corners[0][1][0][0][0],ids_with_corners[0][1][0][0][1],ids_with_corners[0][1][0][2][0],ids_with_corners[0][1][0][2][1]
-            if 'person' in classes:
-                idx = classes.index('person')
-                bbox = bboxes[idx]
+    if 'person' in classes:
+        idx = classes.index('person')
+        bbox = bboxes[idx]
+        result, ids_with_corners = detector.detect_markers(frame)
+        if result is not None:
+            if ids_with_corners:
+                aruco_id = ids_with_corners[0][1][0][0][0],ids_with_corners[0][1][0][0][1],ids_with_corners[0][1][0][2][0],ids_with_corners[0][1][0][2][1]
                 # print('aruco',aruco_id)
                 # print('person:',bbox)
                 if objDet.is_bbox_inside(aruco_id, bbox):
@@ -93,13 +85,10 @@ while True:
                     except Exception as e:
                         pass
 
-    
-    
-    
         cv2.imshow('Frame', frame)
 
-    if prev_switch != switch:
-        get_command('s')
+        if prev_switch != switch:
+            get_command('s')
 
     prev_switch = switch
     if cv2.waitKey(1) & 0xFF == ord('q'):
