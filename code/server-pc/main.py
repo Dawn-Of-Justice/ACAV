@@ -18,6 +18,7 @@ ObjectDetect = objDet()
 
 pathplanner = PathPlanning((0,0))
 
+lock = 0
 def get_command(command):
     receiver.send_command(command)
 
@@ -35,6 +36,8 @@ while True:
     result, ids_with_corners = detector.detect_markers(frame)
     if result is not None:
         # cv2.imshow('Frame', result)
+        if lock == 1:
+            get_command('f')
         if ids_with_corners:
             bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
             aruco_id = ids_with_corners[0][1][0][0][0],ids_with_corners[0][1][0][0][1],ids_with_corners[0][1][0][2][0],ids_with_corners[0][1][0][2][1]
@@ -48,22 +51,34 @@ while True:
                 try:
                     image = cv2.resize(frame,(640, 430))
                     masked_image = processor.process(image)
-                    get_command('f')
+                    
                     if masked_image is not None:
                         cv2.imshow('Skelton', masked_image)
-
+                    #     cv2.line(frame, (pathplanner.lane_1,200), (pathplanner.lane_1, 400), (0,255,0), 2)
+                    #     cv2.line(frame, (pathplanner.lane_2,200), (pathplanner.lane_2, 400), (0,255,0), 2)
                     class_name, confidence_score = protection_system.predict(masked_image)
                     print("Class:", class_name[2:], end="")
                     print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
-                                        
-                    pathplanner.lane_1 = int(frame.shape[0]*0.5)
-                    pathplanner.lane_2 = int(frame.shape[0]*0.9)
-                    pathplanner.centre_of_tracking = (pathplanner.lane_1, pathplanner.lane_2)
+                    if class_name[2:].strip() == "Go":
+                        lock = 1
+                        pathplanner.lane_1 = int(frame.shape[0]*0.5)
+                        pathplanner.lane_2 = int(frame.shape[0]*0.9)
+                        pathplanner.centre_of_tracking = (pathplanner.lane_1, pathplanner.lane_2)
 
-                    command = pathplanner.lane_assist(int((bbox[0]+bbox[1])/2), int((bbox[2]+bbox[3])/2))
+                        command = pathplanner.lane_assist(int((bbox[0]+bbox[2])/2), bbox[2])
+                        cv2.line(frame, (pathplanner.lane_1,200), (pathplanner.lane_1, 400), (0,255,0), 2)
+                        cv2.line(frame, (pathplanner.lane_2,200), (pathplanner.lane_2, 400), (0,255,0), 2)
+                        # if masked_image is not None:
+                        #     cv2.line(frame, (pathplanner.lane_1,200), (pathplanner.lane_1, 400), (0,255,0), 2)
+                        #     cv2.line(frame, (pathplanner.lane_2,200), (pathplanner.lane_2, 400), (0,255,0), 2)
+                        #     cv2.imshow('Skelton', masked_image)
+                            
+                        if command:
+                            get_command(command)
+                    if class_name[2:].strip() == "Stop":
+                        lock = 0
+                        get_command('s')
                     
-                    if command:
-                        get_command(command)
                 except Exception as e:
                     pass
 

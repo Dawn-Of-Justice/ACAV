@@ -17,11 +17,11 @@ class PathPlanning:
     def lane_assist(self, current_x:int, current_y:int):
         
         self.track = (current_x, current_y)
-
-        if self.centre_of_tracking[0] < self.track[0]:
+        # print(f"Track: {self.track[0]} Centre of Tracking: {self.centre_of_tracking[0]} {self.centre_of_tracking[1]}")
+        if self.centre_of_tracking[0] > self.track[0]:
             return 'r'
         
-        if self.centre_of_tracking[0] > self.track[0]:
+        if self.centre_of_tracking[1] < self.track[0]:
             return 'l'
 
         if self.reset == True:
