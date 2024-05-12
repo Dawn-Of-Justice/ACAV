@@ -94,12 +94,14 @@ while True:
                         pass
 
     
-    prev_switch = switch
+    
+    
+        cv2.imshow('Frame', frame)
 
     if prev_switch != switch:
         get_command('s')
 
-        cv2.imshow('Frame', frame)
+    prev_switch = switch
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
