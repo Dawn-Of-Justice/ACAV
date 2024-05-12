@@ -95,9 +95,9 @@ while True:
         
             except Exception as e:
                 pass
-        else:
-            delta = 0
-            get_command('s')
+    else:
+        delta = 0
+        get_command('s')
         prev_delta = delta            
         cv2.imshow('Frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
