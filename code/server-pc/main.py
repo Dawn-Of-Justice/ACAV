@@ -103,6 +103,12 @@ while True:
                         cv2.line(frame, (pathplanner.lane_1,200), (pathplanner.lane_1, 400), (0,255,0), 2)
                         cv2.line(frame, (pathplanner.lane_2,200), (pathplanner.lane_2, 400), (0,255,0), 2)
                         # if masked_image is not None:
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 14800ff (Update main.py)
+=======
+>>>>>>> parent of 14800ff (Update main.py)
+=======
 >>>>>>> parent of 14800ff (Update main.py)
                         #     cv2.line(frame, (pathplanner.lane_1,200), (pathplanner.lane_1, 400), (0,255,0), 2)
                         #     cv2.line(frame, (pathplanner.lane_2,200), (pathplanner.lane_2, 400), (0,255,0), 2)
@@ -114,6 +120,8 @@ while True:
                         lock = 0
                         get_command('s')
 
+<<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< HEAD
                         if lock:    
                             pathplanner.lane_1 = int(frame.shape[0]*0.5)
@@ -139,6 +147,10 @@ while True:
                         pass
     
 =======
+=======
+>>>>>>> parent of 14800ff (Update main.py)
+=======
+>>>>>>> parent of 14800ff (Update main.py)
         
                 except Exception as e:
                     pass
