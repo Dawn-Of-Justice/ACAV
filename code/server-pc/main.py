@@ -61,6 +61,8 @@ while True:
                     print("Confidence Score:", str(np.round(confidence_score * 100))[:-2], "%")
                     if class_name[2:].strip() == "Go":
                         lock = 1
+
+                    if lock:    
                         pathplanner.lane_1 = int(frame.shape[0]*0.5)
                         pathplanner.lane_2 = int(frame.shape[0]*0.9)
                         pathplanner.centre_of_tracking = (pathplanner.lane_1, pathplanner.lane_2)
