@@ -8,7 +8,6 @@ import numpy as np
 import threading
 from PathPlanner import PathPlanning
 
-
 receiver = VideoReceiver()
 receiver.accept_connection()
 detector = ArUcoDetector()
@@ -23,6 +22,17 @@ delta = 0
 prev_delta = 0
 def get_command(command):
     receiver.send_command(command)
+
+
+def find_nigga(last_action:str):
+    global active
+    if active:
+        if last_action == 'l':
+            get_command('hl')
+            active = False
+        if last_action == 'r':
+            get_command('hr')
+            active = False
 
 # command_thread = threading.Thread(target=get_command)
 # command_thread.daemon = True
@@ -85,6 +95,8 @@ while True:
                                 
                             if command:
                                 get_command(command)
+                            if command is None:
+                                get_command('n')
                         if class_name[2:].strip() == "Stop":
                             lock = 0
                             get_command('s')
@@ -95,11 +107,18 @@ while True:
         
             except Exception as e:
                 pass
+    
+        cv2.imshow('Frame', frame)
+    
+    
     else:
         delta = 0
         get_command('s')
         prev_delta = delta            
-        cv2.imshow('Frame', frame)
+        
+    
+
+
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
