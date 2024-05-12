@@ -19,6 +19,8 @@ ObjectDetect = objDet()
 pathplanner = PathPlanning((0,0))
 
 lock = 0
+delta = 0
+prev_delta = 0
 def get_command(command):
     receiver.send_command(command)
 
@@ -34,11 +36,16 @@ while True:
     if not receiver.display_frame(frame):
         break
     result, ids_with_corners = detector.detect_markers(frame)
+    
+    if prev_delta == 1 and delta == 0:
+        cv2.destroyAllWindows()
     if result is not None:
         # cv2.imshow('Frame', result)
         if lock == 1:
-            get_command('f')
+            get_command('f')   
+ 
         if ids_with_corners:
+            delta = 1
             bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
             aruco_id = ids_with_corners[0][1][0][0][0],ids_with_corners[0][1][0][0][1],ids_with_corners[0][1][0][2][0],ids_with_corners[0][1][0][2][1]
             if 'person' in classes:
@@ -80,10 +87,12 @@ while True:
                     if class_name[2:].strip() == "Stop":
                         lock = 0
                         get_command('s')
-                    
+
+        
                 except Exception as e:
                     pass
-
+        else:
+            delta = 0            
         cv2.imshow('Frame', frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
