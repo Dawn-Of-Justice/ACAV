@@ -33,7 +33,11 @@ while True:
         
     switch = 1
     if lock == 1:
-        get_command('f')   
+        get_command('f')
+
+    if lock == 0:
+        lock = None
+        get_command('s')   
 
     bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
 
