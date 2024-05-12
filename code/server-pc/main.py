@@ -36,7 +36,7 @@ while True:
         get_command('f')
 
     if lock == 0:
-        lock = None
+        lock = -1
         get_command('s')   
 
     bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
