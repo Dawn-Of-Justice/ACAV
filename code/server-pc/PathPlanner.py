@@ -19,10 +19,10 @@ class PathPlanning:
         self.track = (current_x, current_y)
         # print(f"Track: {self.track[0]} Centre of Tracking: {self.centre_of_tracking[0]} {self.centre_of_tracking[1]}")
         if self.centre_of_tracking[0] > self.track[0]:
-            return 'r'
+            return 'l'
         
         if self.centre_of_tracking[1] < self.track[0]:
-            return 'l'
+            return 'r'
 
         if self.reset == True:
             self.l_or_r = None
