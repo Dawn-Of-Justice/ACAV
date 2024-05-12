@@ -91,7 +91,7 @@ while True:
     
         cv2.imshow('Frame', frame)
 
-    else:
+    elif 'person' not in classes and lock == 1:
         lock = 0
 
     prev_switch = switch
