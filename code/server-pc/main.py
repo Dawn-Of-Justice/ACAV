@@ -84,11 +84,11 @@ while True:
             
                     except Exception as e:
                         pass
-
+    
         cv2.imshow('Frame', frame)
 
-        if prev_switch != switch:
-            get_command('s')
+    else:
+        lock = 0
 
     prev_switch = switch
     if cv2.waitKey(1) & 0xFF == ord('q'):
