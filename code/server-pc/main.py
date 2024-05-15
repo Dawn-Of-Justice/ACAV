@@ -6,7 +6,8 @@ from obj_det import objDet
 import cv2
 import numpy as np
 import threading
-from PathPlanner import PathPlanning
+# from PathPlanner import PathPlanning
+from PathPlanner2 import PathPlanning
 
 receiver = VideoReceiver()
 receiver.accept_connection()
@@ -59,7 +60,11 @@ while True:
                 delta = 1
                 bboxes, classes, _ = ObjectDetect.detect(frame, return_bbox=True)
                 aruco_id = ids_with_corners[0][1][0][0][0],ids_with_corners[0][1][0][0][1],ids_with_corners[0][1][0][2][0],ids_with_corners[0][1][0][2][1]
+                
+                ObjectDetect.draw_bbox(frame, bboxes, classes, _)
+                # frame = pathplanner.draw_filled_rectangles(frame, bboxes, classes, _)
                 if 'person' in classes:
+                    
                     idx = classes.index('person')
                     bbox = bboxes[idx]
                     # print('aruco',aruco_id)
@@ -85,7 +90,10 @@ while True:
                             pathplanner.lane_2 = int(frame.shape[0]*0.9)
                             pathplanner.centre_of_tracking = (pathplanner.lane_1, pathplanner.lane_2)
 
-                            command = pathplanner.lane_assist(int((bbox[0]+bbox[2])/2), bbox[2])
+                            # command = pathplanner.lane_assist(int((bbox[0]+bbox[2])/2), bbox[2])
+                            command = pathplanner.lane_assist(int((bbox[0]+bbox[2])/2), bbox[2], classes, bboxes=bboxes, goal_pos = (int((bbox[0]+bbox[2])/2), int((bbox[1]+bbox[3])/2)))
+                            # obstacle_mask = pathplanner.draw_filled_rectangles(frame, bboxes, classes, _)
+                            # cv2.imshow('Mask', obstacle_mask)
                             cv2.line(frame, (pathplanner.lane_1,200), (pathplanner.lane_1, 400), (0,255,0), 2)
                             cv2.line(frame, (pathplanner.lane_2,200), (pathplanner.lane_2, 400), (0,255,0), 2)
                             # if masked_image is not None:
@@ -108,7 +116,7 @@ while True:
             except Exception as e:
                 pass
     
-        cv2.imshow('Frame', frame)
+        # cv2.imshow('Frame', frame)
     
     
     else:
@@ -116,6 +124,7 @@ while True:
         get_command('s')
         prev_delta = delta            
         
+    cv2.imshow('Frame', frame)
     
 
 

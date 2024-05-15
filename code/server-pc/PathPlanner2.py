@@ -113,9 +113,35 @@ class PathPlanning:
         plt.grid()
         plt.show()
 
+    def draw_filled_rectangles(self, image, bboxes, classes, scores, colors=None):
+        """
+        Draw filled rectangles around bounding boxes on the image.
 
-        
+        Args:
+        - image (numpy.ndarray): Input image.
+        - bboxes (list): List of bounding boxes in the format [[x1, y1, x2, y2], ...].
+        - classes (list): List of class labels corresponding to each bounding box.
+        - scores (list): List of confidence scores corresponding to each bounding box.
+        - colors (list, optional): List of BGR colors for drawing rectangles. If not provided, random colors will be used.
 
+        Returns:
+        - numpy.ndarray: Image with filled rectangles drawn.
+        """
+        for bbox, class_label, score in zip(bboxes, classes, scores):
+            if class_label != 'person':
+                x1, y1, x2, y2 = map(int, bbox)
+
+                if colors is None:
+                    color = (int(class_label * 12.5), int(score * 255), int((1 - score) * 255))
+                else:
+                    color = colors[class_label]
+
+                cv.rectangle(image, (x1, y1), (x2, y2), color, cv.FILLED)
+                
+                text = f"{class_label}: {score:.2f}"
+                cv.putText(image, text, (x1, y1 - 5), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv.LINE_AA)
+
+        return image
         
 if __name__ == "__main__":
 
