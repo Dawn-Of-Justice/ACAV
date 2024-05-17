@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 import threading
 # from PathPlanner import PathPlanning
-from PathPlanner2 import PathPlanning
+from PathPlanner import PathPlanning
 
 receiver = VideoReceiver()
 receiver.accept_connection()

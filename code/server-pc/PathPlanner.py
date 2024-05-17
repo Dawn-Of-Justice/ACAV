@@ -1,21 +1,31 @@
-import random
-import cv2
-from cvlib import object_detection
+# Just a dummy trial to make the path traversal from scratch
+
+import numpy as np
+import cv2 as cv
+import matplotlib.pyplot as plt
+import math
+threshold = 10
 
 class PathPlanning:
 
     def __init__(self, centre_of_tracking:tuple):
-        
-
         self.lane_1 = centre_of_tracking[0]
         self.lane_2 = centre_of_tracking[1]
         self.track = None
         self.centre_of_tracking = centre_of_tracking
         self.l_or_r = None
         self.reset = False
+        self.start = (0,0)
 
-    def lane_assist(self, current_x:int, current_y:int):
-        
+
+    def lane_assist(self, current_x:int, current_y:int, classes, bboxes, goal_pos):
+
+        if self.check_obstacles(classes):
+            action = self.obstacle_avoidance(classes, bboxes, goal_pos)
+            if action is not None:
+                return action
+            
+    
         self.track = (current_x, current_y)
         # print(f"Track: {self.track[0]} Centre of Tracking: {self.centre_of_tracking[0]} {self.centre_of_tracking[1]}")
         if self.centre_of_tracking[0] > self.track[0]:
@@ -28,133 +38,156 @@ class PathPlanning:
             self.l_or_r = None
             self.reset = False
 
-    def correct_path(self, obstacle_endpoints:tuple, reset=False):
 
-        # Turn until one of the assisting lanes gets corrected:
-        if self.l_or_r ==  None:
-            self.l_or_r =  random.choice(["left", "right"])
+    def obstacle_avoidance(self, classes, bboxes, goal_pos):
+        obstacles = []
+        for clas, bbox in zip(classes, bboxes):
+            if clas != 'person':
+                obstacles.append((int((bbox[0]+bbox[2])/2), int((bbox[1]+bbox[3])/2)))
+        if obstacles:
+            force_field_vector = self.calculate_force_field(obstacles, goal)
+            force_field_angle = self.calculate_force_field_angle(force_field_vector)
+            force_field_angle_degrees = math.degrees(force_field_angle)
 
-        return self.l_or_r
-    
+            if force_field_angle_degrees < 90:
+                return 'r', force_field_angle_degrees
+            
+            if force_field_angle_degrees > 90:
+                return 'l', force_field_angle_degrees
 
-import cv2
-import socket
-import numpy as np
+    def check_obstacles(self, classes):
+        flag = False
+        for clas in classes:
+            if clas != 'person':
+                flag = True
+        return flag
+    def calculate_force_field(self, obstacles, goal):
+        # Initialize total force field vector
+        total_force_field = [0, 0]
 
-pathplanner = PathPlanning((300, 400))
+        # Iterate through each obstacle
+        for obstacle in obstacles:
+            # Step 1: Calculate the vector from obstacle to goal
+            vector_to_goal = (goal[0] - obstacle[0], goal[1] - obstacle[1])
 
-class VideoReceiver:
-    def __init__(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.bind(("0.0.0.0", 5000))
-        self.sock.listen(1)
-        print("Waiting for connection...")
+            # Step 2: Normalize the vector
+            magnitude = math.sqrt(vector_to_goal[0]**2 + vector_to_goal[1]**2)
+            unit_vector = (vector_to_goal[0] / magnitude, vector_to_goal[1] / magnitude)
 
-    def accept_connection(self):
-        self.conn, self.addr = self.sock.accept()
-        print("Connected by", self.addr)
+            # Step 3: Invert the vector
+            inverted_vector = (unit_vector[0], unit_vector[1])
 
-    def receive_frame(self):
-        jpg = bytearray()
-        while True:
-            data = self.conn.recv(1024)
-            if not data:
-                break
-            jpg.extend(data)
-            if b'END_OF_IMAGE' in jpg:  
-                jpg = jpg[:-12]  
-                break
-        if len(jpg) == 0:
-            print("No data received. Connection closed.")
-            return None
-        frame = cv2.imdecode(np.frombuffer(jpg, np.uint8), cv2.IMREAD_COLOR)
+            # Add the force field contribution from this obstacle to the total force field
+            total_force_field[0] += inverted_vector[0]
+            total_force_field[1] += inverted_vector[1]
+
+        return total_force_field
+
+    def calculate_force_field_angle(self,force_field_vector):
+        # Calculate the angle
+        angle = math.atan2(force_field_vector[1], force_field_vector[0])
+
+        return angle
+
+    def plot_force_field(self, obstacles, goal, force_field_vector):
+        # Plot obstacles
+        for obstacle in obstacles:
+            plt.plot(obstacle[0], obstacle[1], 'ro')  # Red circles for obstacles
+
+        # Plot goal
+        plt.plot(goal[0], goal[1], 'go')  # Green circle for goal
+
+        # Plot force field vector
+        plt.quiver(*self.start, force_field_vector[0], force_field_vector[1], angles='xy', scale_units='xy', scale=1, color='b')
+
+        # Set plot limits
+        plt.xlim(-1, 6)
+        plt.ylim(-1, 8)
+
+        # Add labels and title
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title('Force Field Visualization')
+
+        # Show plot
+        plt.grid()
+        plt.show()
+
+    def draw_filled_rectangles(self, image, bboxes, classes, scores, colors=None):
+        """
+        Draw filled rectangles around bounding boxes on the image.
+
+        Args:
+        - image (numpy.ndarray): Input image.
+        - bboxes (list): List of bounding boxes in the format [[x1, y1, x2, y2], ...].
+        - classes (list): List of class labels corresponding to each bounding box.
+        - scores (list): List of confidence scores corresponding to each bounding box.
+        - colors (list, optional): List of BGR colors for drawing rectangles. If not provided, random colors will be used.
+
+        Returns:
+        - numpy.ndarray: Image with filled rectangles drawn.
+        """
+        for bbox, class_label, score in zip(bboxes, classes, scores):
+            if class_label != 'person':
+                x1, y1, x2, y2 = map(int, bbox)
+
+                if colors is None:
+                    color = (int(class_label * 12.5), int(score * 255), int((1 - score) * 255))
+                else:
+                    color = colors[class_label]
+
+                cv.rectangle(image, (x1, y1), (x2, y2), color, cv.FILLED)
+                
+                text = f"{class_label}: {score:.2f}"
+                cv.putText(image, text, (x1, y1 - 5), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv.LINE_AA)
+
+        return image
         
-        # print(detected)
-        
-        if frame is None:
-            #print("Error decoding image. Data length:", len(jpg))
-            return None
-        
-        if frame is not None:
-
-            pathplanner.lane_1 = int(frame.shape[0]*0.5)
-            pathplanner.lane_2 = int(frame.shape[0]*0.9)
-            pathplanner.centre_of_tracking = (pathplanner.lane_1, pathplanner.lane_2)
-
-            detected = object_detection.detect_common_objects(frame,confidence=0.2)
-
-            if detected[0]:
-                # pathplanner.correct_path(obstacle_endpoints=(int((detected[0][0][0]+detected[0][0][1])/2), int((detected[0][0][2]+detected[0][0][3])/2)))
-                pathplanner.lane_assist(int((detected[0][0][0]+detected[0][0][1])/2), int((detected[0][0][2]+detected[0][0][3])/2))
-
-        return frame
-
-    def display_frame(self, frame, Title='Received'):
-        cv2.imshow(Title, frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            self.conn.close()
-            cv2.destroyAllWindows()
-            return False
-        return True
-
-    def close_connection(self):
-        self.conn.close()
-        cv2.destroyAllWindows()
-
-def main():
-    receiver = VideoReceiver()
-    receiver.accept_connection()
-    while True:
-        frame = receiver.receive_frame()
-        if frame is None:
-            continue
-        if not receiver.display_frame(frame):
-            break
-    receiver.close_connection()
-
-# if __name__ == '__main__':
-#     main()
-
-
-
 if __name__ == "__main__":
-    # Testcode is ran here
+
+
+    pathplanner = PathPlanning((0,0))
+    # Example usage
+    obstacles = [(1, 2), (3, 4), (4,5)]  # Coordinates of multiple obstacles
     
-    import cv2
-    from cvlib import object_detection
+    goal = (-1,7)
+    force_field_vector = pathplanner.calculate_force_field(obstacles, goal)
+    print("Total force field vector:", force_field_vector)
 
+    # Calculate the angle
+    force_field_angle = pathplanner.calculate_force_field_angle(force_field_vector)
+    print("Force field angle (radians):", force_field_angle)
 
-    # obj_detector = object_detection.detect_common_objects()
-    pathplanner = PathPlanning((300, 400))
+    # Convert radians to degrees if needed
+    force_field_angle_degrees = math.degrees(force_field_angle)
+    print("Force field angle (degrees):", force_field_angle_degrees)
 
+    # Plot the force field
+    pathplanner.plot_force_field(obstacles, goal, force_field_vector)
 
-    cam = cv2.VideoCapture(0)
+    # ref_frame = cv.imread(r"C:\Users\ROHIT FRANCIS\Downloads\Test1 (2).jpg")
+    # pathplanner = PathPlanning(ref_frame)
+    # feed = cv.imread(r"C:\Users\ROHIT FRANCIS\Downloads\Test3.jpg")
+    # cv.imshow("", ref_frame)
+    # cv.imshow(" ", feed)
+    # cv.waitKey(0)
+    # pathplanner.lane_assist(feed)
 
-    while True:
+    # cam = cv.VideoCapture(0)
 
-        ret, frame = cam.read()
+    # ret, ref_frame = cam.read()
+    # # if ret:
+    # pathplanner = PathPlanning(ref_frame)
 
-        pathplanner.lane_1 = int(frame.shape[0]*0.5)
-        pathplanner.lane_2 = int(frame.shape[0]*0.9)
-        pathplanner.centre_of_tracking = (pathplanner.lane_1, pathplanner.lane_2)
-        if cv2.waitKey(1) == ord("q"):
-            break
-        detected = object_detection.detect_common_objects(frame,confidence=0.5)
-        if detected:
-            # print(detected)
-            object_detection.draw_bbox(frame,detected[0],detected[1],detected[2])
-            # print(detected[0][0][0], detected[0][0][1], detected[0][0][2], detected[0][0][3])
+    # while True:
 
-            # print((detected[0][0][0]+detected[0][0][1])/2, (detected[0][0][2]+detected[0][0][3])/2)
+    #     ret, frame = cam.read()
+        
+    #     mask = pathplanner.lane_assist(frame)
 
+    #     if cv.waitKey(1) == ord('q'):
+    #         break
 
-            cv2.circle(frame, center=(int((detected[0][0][0]+detected[0][0][1])/2), int((detected[0][0][2]+detected[0][0][3])/2)), thickness=3, color=(0,0,0), radius=3)
-
-            cv2.line(frame, (pathplanner.lane_1,200), (pathplanner.lane_1, 400), (0,255,0), 2)
-            cv2.line(frame, (pathplanner.lane_2,200), (pathplanner.lane_2, 400), (0,255,0), 2)
-        cv2.imshow("feed", frame)
-
-    cam.release()
-    cv2.destroyAllWindows()
-
-
+    #     cv.imshow('feed', frame)
+    #     cv.imshow("mask", mask)
+    #     pathplanner.ref_frame = frame
