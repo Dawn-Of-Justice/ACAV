@@ -1,6 +1,6 @@
 # ACAV - Autonomous Construction Aid Vehicle
 
-ACAV (Autonomous Construction Aid Vehicle) is a mini-project aimed at developing an AI-powered cyber truck-like robot capable of assisting with carrying heavy loads for workers on construction sites. The project utilizes computer vision and artificial intelligence to enable the robot to autonomously follow and assist workers.
+ACAV (Autonomous Construction Aid Vehicle) is a design concept that uses computer vision and machine learning to aid construction workers in transporting materials based on gestures from a supervisor. The system uses a Raspberry Pi camera module to capture video frames, detects ArUco markers, and recognizes gestures using a pre-trained model trained on Teachable Machine. The system then sends commands to the cyber truck to transport materials accordingly.
 
 <img src="images/construction-vehicle.jpg" alt="ACAV Robot" width="500">
  
@@ -20,20 +20,23 @@ The ACAV system operates as follows:
 
 ## Features
 
-- Real-time object detection and tracking using YOLOv3.
+- Real-time object detection and tracking using YOLOv4.
 - Precise worker localization via ArUco markers.
 - Autonomous following with predefined rules for safe interaction.
 - Gesture-based communication for seamless interaction between the robot and the worker.
 
 ## Usage
 
-To utilize the ACAV system, follow these steps:
+### Running the Application
 
-1. Ensure the ACAV robot is powered on and connected to the necessary sensors and actuators.
-2. Deploy the YOLOv3 object detection model on the robot's hardware.
-3. Embed ArUco markers on the workers' uniforms for accurate localization.
-4. Initiate the ACAV system and monitor its interaction with workers.
-5. Utilize hand gestures according to the predefined commands for communication with the robot.
+1. Clone this repository to your server PC.
+2. Run `main.py` on the server PC.
+3. Run `test_copy.py` on the Raspberry Pi with the IP address of the server PC as an argument.
+
+## Model Training
+----------------
+
+The gesture recognition model was trained using Teachable Machine, a web-based platform for machine learning model training. The model was trained on a dataset of images and videos of the supervisor's gestures.
 
 ## Contributing
 
