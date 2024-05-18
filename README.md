@@ -36,7 +36,7 @@ The ACAV system operates as follows:
 ## Model Training
 ----------------
 
-The gesture recognition model was trained using Teachable Machine, a web-based platform for machine learning model training. The model was trained on a dataset of images and videos of the supervisor's gestures.
+The gesture recognition model was trained using Teachable Machine, a web-based platform for machine learning model training. The model was trained on a dataset of images of the supervisor's gestures, but not directly. First, we ran gesture.py and then captured multiple images of the skeleton view of the gestures. This is done to increase the accuracy of the model.
 
 ## Contributing
 
