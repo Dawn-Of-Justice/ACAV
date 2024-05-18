@@ -2,7 +2,7 @@
 
 ACAV (Autonomous Construction Aid Vehicle) is a design concept that uses computer vision and machine learning to aid construction workers in transporting materials based on gestures from a supervisor. The system uses a Raspberry Pi camera module to capture video frames, detects ArUco markers, and recognizes gestures using a pre-trained model trained on Teachable Machine. The system then sends commands to the cyber truck to transport materials accordingly.
 
-<img src="images/construction-vehicle.jpg" alt="ACAV Robot" width="500">
+<img src="images/ACAV-prototype.jpg" alt="ACAV Robot" width="500">
  
 ## How It Works
 
