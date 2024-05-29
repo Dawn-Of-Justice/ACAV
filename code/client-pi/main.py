@@ -15,12 +15,10 @@ import board
 print(GPIO.getmode())
 
 # Set the pin number you want to control
-pin_number =24
+pin_number = 24
 
 # Set the pin as an output
 GPIO.setup(pin_number, GPIO.OUT)
-
-
 
 def set_servo_angle(servo_number, angle):
     if servo_number < 16:
