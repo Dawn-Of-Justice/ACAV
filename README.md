@@ -27,11 +27,8 @@ The ACAV system operates as follows:
 
 ## Usage
 
-### Running the Application
+For a step-by-step guide on how to build and deploy your Autonomous Construction Aid Vehicle, please refer to our [blog post](https://blazingcold.com/diy-autonomus-car/). This tutorial will walk you through every step of the process, from setting up the Raspberry Pi to calibrating the motor.
 
-1. Clone this repository to your server PC.
-2. Run `main.py` on the server PC.
-3. Run `test_copy.py` on the Raspberry Pi with the IP address of the server PC as an argument.
 
 ## Model Training
 ----------------
