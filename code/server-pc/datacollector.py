@@ -53,9 +53,10 @@ if __name__ == "__main__":
     receiver = VideoReceiver()
     receiver.accept_connection()
 
-    blank_num = 59
-    go_num = 42
-    stop_num = 38
+    blank_num = 0
+    go_num = 0
+    stop_num = 0
+    laser_num = 0
 
     while True:
         frame = receiver.receive_frame()
@@ -73,20 +74,26 @@ if __name__ == "__main__":
         if key == ord("b"):
             print('hi')
             if masked_image is not None :
-                cv2.imwrite(r'C:\Users\salos\OneDrive\Documents\GitHub\ACAV\code\Data\Blank\image_{}.jpg'.format(blank_num), masked_image)
+                cv2.imwrite(r'C:\Users\rahul\Desktop\Dataset\Blank\image_{}.jpg'.format(blank_num), masked_image)
                 blank_num += 1
 
         if key == ord("s"):
             print('stop')
             if masked_image is not None :
-                cv2.imwrite(r'C:\Users\salos\OneDrive\Documents\GitHub\ACAV\code\Data\Stop\image_{}.jpg'.format(stop_num), masked_image)
+                cv2.imwrite(r'C:\Users\rahul\Desktop\Dataset\Stop\image_{}.jpg'.format(stop_num), masked_image)
                 stop_num += 1
 
         if key == ord("g"):
             print('go')
             if masked_image is not None:
-                cv2.imwrite(r'C:\Users\salos\OneDrive\Documents\GitHub\ACAV\code\Data\Go\image_{}.jpg'.format(go_num), masked_image)
+                cv2.imwrite(r'C:\Users\rahul\Desktop\Dataset\Go\image_{}.jpg'.format(go_num), masked_image)
                 go_num += 1
+
+        if key == ord("l"):
+            print('laser')
+            if masked_image is not None:
+                cv2.imwrite(r'C:\Users\rahul\Desktop\Dataset\Laser\image_{}.jpg'.format(laser_num), masked_image)
+                laser_num += 1
 
         if key == ord("q"):
             break

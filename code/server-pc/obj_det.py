@@ -3,7 +3,7 @@ import cvlib as cv
 from cvlib.object_detection import draw_bbox
 
 class objDet:
-    def __init__(self, model="yolov4", confidence=0.5):
+    def __init__(self, model="yolov3", confidence=0.5):
         self.model = model
         self.confidence = confidence
 
@@ -40,7 +40,7 @@ class objDet:
 if __name__ == "__main__":
     
     detector = objDet()
-    img = cv2.imread(r"C:\Users\salos\OneDrive\Desktop\images.jpeg")
+    img = cv2.imread(r"C:\Users\rahul\Desktop\image.jpg")
     bbox, label, conf = detector.detect(img, return_bbox=True)
     
     detector.draw_bbox(img, bbox, label, conf)
